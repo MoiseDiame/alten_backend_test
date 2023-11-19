@@ -1,8 +1,9 @@
 package com.alten.testbackend.rest;
 
-import com.alten.testbackend.entities.Product;
-import com.alten.testbackend.exception.ResourceNotFoundException;
+import com.alten.testbackend.dto.ProductDTO;
 import com.alten.testbackend.service.ProductService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,57 +17,57 @@ public class ProductRESTController {
     public ProductRESTController(ProductService productService){
         this.productService = productService;
     }
+
+
     @GetMapping("/products")
-    public List<Product> getAllProducts(){
+    public List<ProductDTO> getAllProducts(){
         return productService.findAll();
     }
 
-    @GetMapping("/products/{id}")
-    public Product getProduct(@PathVariable int id){
-        Product product = productService.findById(id);
 
-        if (product==null){
-            throw new ResourceNotFoundException("Product with the given id "+ id +" not found");
-        }
-        return product;
+    @GetMapping("/products/{id}")
+    public ProductDTO getProduct(@PathVariable int id){
+
+        return productService.findById(id);
     }
 
     @PostMapping("/products")
-    public Product addProduct(@RequestBody Product product){
+    public ResponseEntity<ProductDTO> addProduct(@Valid @RequestBody ProductDTO product){
         /*
         *  In case an Id is set in the JSON, to prevent an update
         *  Force the Id to 0 (zero) to ensure a new item is created
         */
         product.setId(0);
 
-        Product productToCreate = productService.save(product);
+        ProductDTO productToCreate = productService.save(product);
 
-        return productToCreate;
+        return ResponseEntity.ok(productToCreate);
     }
 
     @PatchMapping("/products/{id}")
-    public Product updateProduct(@PathVariable int id,
-                                 @RequestBody Product productUpdate){
+    public ProductDTO updateProduct(@PathVariable int id,
+                                 @Valid @RequestBody ProductDTO productUpdate){
 
-        Product productToUpdate = productService.findById(id);
+        /*
+         * Checking first if the id provided is valid if not Exception Thrown
+         * */
+        ProductDTO productToUpdate = productService.findById(id);
 
-        if (productToUpdate==null){
-            throw new ResourceNotFoundException("Product with the given id "+ id +" not found");
-        }
 
-        Product productToSave = productService.save(productUpdate);
+        ProductDTO UpdatedProduct = productUpdate;
 
-        return productToSave;
+        /*
+         * Making sure to update the product with the given id and not creating a new one
+         */
+        UpdatedProduct.setId(id);
+
+
+
+        return productService.save(UpdatedProduct);
     }
 
     @DeleteMapping("products/{id}")
     public String deleteProduct(@PathVariable int id){
-
-        Product productToDelete = productService.findById(id);
-
-        if (productToDelete==null){
-            throw new ResourceNotFoundException("Product with the given id "+ id +" not found");
-        }
 
         productService.deleteById(id);
 

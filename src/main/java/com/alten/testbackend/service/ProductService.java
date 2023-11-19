@@ -1,15 +1,17 @@
 package com.alten.testbackend.service;
 
+import com.alten.testbackend.dto.ProductDTO;
 import com.alten.testbackend.entities.Product;
 
 import java.util.List;
 
 public interface ProductService {
 
-    List<Product> findAll();
-    Product findById(int id);
+    List<ProductDTO> findAll();
+    ProductDTO findById(int id);
 
-    Product save (Product product);
+    ProductDTO save (ProductDTO product);
+
 
     void deleteById(int id);
 }
