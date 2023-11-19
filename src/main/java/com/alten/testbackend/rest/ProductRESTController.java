@@ -45,7 +45,7 @@ public class ProductRESTController {
     }
 
     @PatchMapping("/products/{id}")
-    public ProductDTO updateProduct(@PathVariable int id,
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable int id,
                                  @Valid @RequestBody ProductDTO productUpdate){
 
         /*
@@ -63,7 +63,7 @@ public class ProductRESTController {
 
 
 
-        return productService.save(UpdatedProduct);
+        return ResponseEntity.ok(productService.save(UpdatedProduct));
     }
 
     @DeleteMapping("products/{id}")
